@@ -68,20 +68,20 @@ func determineInput() io.Reader {
 
 func emptyHashes() []HashSum {
 	return []HashSum{
-		HashSum{Name: "md5", hash: md5.New()},
-		HashSum{Name: "sha1", hash: sha1.New()},
-		HashSum{Name: "sha256", hash: sha256.New()},
-		HashSum{Name: "sha512", hash: sha512.New()},
-		HashSum{Name: "adler32", hash: adler32.New()},
-		HashSum{Name: "crc32 (IEEE)", hash: crc32.New(crc32.MakeTable(crc32.IEEE))},
-		HashSum{Name: "crc32 (Castagnoli)", hash: crc32.New(crc32.MakeTable(crc32.Castagnoli))},
-		HashSum{Name: "crc32 (Koopman)", hash: crc32.New(crc32.MakeTable(crc32.Koopman))},
-		HashSum{Name: "crc64 (ISO)", hash: crc64.New(crc64.MakeTable(crc64.ISO))},
-		HashSum{Name: "crc64 (ECMA)", hash: crc64.New(crc64.MakeTable(crc64.ECMA))},
-		HashSum{Name: "fnv32-1", hash: fnv.New32()},
-		HashSum{Name: "fnv32-1a", hash: fnv.New32a()},
-		HashSum{Name: "fnv64-1", hash: fnv.New64()},
-		HashSum{Name: "fnv64-1a", hash: fnv.New64a()},
+		{Name: "md5", hash: md5.New()},
+		{Name: "sha1", hash: sha1.New()},
+		{Name: "sha256", hash: sha256.New()},
+		{Name: "sha512", hash: sha512.New()},
+		{Name: "adler32", hash: adler32.New()},
+		{Name: "crc32 (IEEE)", hash: crc32.New(crc32.MakeTable(crc32.IEEE))},
+		{Name: "crc32 (Castagnoli)", hash: crc32.New(crc32.MakeTable(crc32.Castagnoli))},
+		{Name: "crc32 (Koopman)", hash: crc32.New(crc32.MakeTable(crc32.Koopman))},
+		{Name: "crc64 (ISO)", hash: crc64.New(crc64.MakeTable(crc64.ISO))},
+		{Name: "crc64 (ECMA)", hash: crc64.New(crc64.MakeTable(crc64.ECMA))},
+		{Name: "fnv32-1", hash: fnv.New32()},
+		{Name: "fnv32-1a", hash: fnv.New32a()},
+		{Name: "fnv64-1", hash: fnv.New64()},
+		{Name: "fnv64-1a", hash: fnv.New64a()},
 	}
 }
 
