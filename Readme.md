@@ -1,7 +1,7 @@
 # Hashes #
 
-Calculate different hashes for file at the same time. Rather
-efficient, as input is read only once.
+Calculate values of different hash functions for some piece of data
+at the same time. Rather efficient, as input is read only once.
 
 ## Installation ##
 
@@ -17,13 +17,21 @@ To update installation just add `-u` flag.
 
 ## Usage ##
 
+`hashes` accepts single filename as an argument. If no arguments
+provided, data is read from stdin.
+
+### Output formats ###
+
+Three output formats are supported: plain, json and xml:
+
 ```shell
 Usage of hashes:
   -format="plain": format of output (allowed values: plain, json, xml)
 ```
-If no arguments provided, data is read from stdin.
 
-Example usage:
+### Usage examples ###
+
+Plain output format:
 
 ```shell
 $ hashes somefile
@@ -41,6 +49,70 @@ fnv32-1: 23124a1a
 fnv32-1a: ae662f74
 fnv64-1: af92ca3d4f7dbfda
 fnv64-1a: 0615cf2092b65c54
+```
+
+JSON output:
+
+```shell
+$ hashes --format=json someotherfile
+[
+  {
+    "Name": "md5",
+    "Value": "f2b31d3a6a5c2827da2bb8832a082fa2"
+  },
+  {
+    "Name": "sha1",
+    "Value": "f1378a19c1ff20cfa5fef8103835084b9bdb7b2d"
+  },
+  {
+    "Name": "sha256",
+    "Value": "1c1c2a5993c6bd88588fa8f936b3e90eb64249de0088273e0479b494afaa36a0"
+  },
+  {
+    "Name": "sha512",
+    "Value": "3be02bd92fc20d8551a1a3e3bd71c9cbda4fddead75770b0aa867a64c80784c0958d03cc6eface14855dd36835108fdb79fae5e5aa2e2ea0211739329431edb5"
+  },
+  {
+    "Name": "adler32",
+    "Value": "933507dd"
+  },
+  {
+    "Name": "crc32 (IEEE)",
+    "Value": "7c992293"
+  },
+  {
+    "Name": "crc32 (Castagnoli)",
+    "Value": "28f9621e"
+  },
+  {
+    "Name": "crc32 (Koopman)",
+    "Value": "f98f7d0a"
+  },
+  {
+    "Name": "crc64 (ISO)",
+    "Value": "a559d223584f0660"
+  },
+  {
+    "Name": "crc64 (ECMA)",
+    "Value": "eb0b411de9b9a2bf"
+  },
+  {
+    "Name": "fnv32-1",
+    "Value": "1ff0b102"
+  },
+  {
+    "Name": "fnv32-1a",
+    "Value": "9e82a844"
+  },
+  {
+    "Name": "fnv64-1",
+    "Value": "f44436c1175a84a2"
+  },
+  {
+    "Name": "fnv64-1a",
+    "Value": "584d896cf9a92744"
+  }
+]
 ```
 
 ## Supported hash functions ##
