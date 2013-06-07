@@ -12,7 +12,6 @@ import (
 	"hash/crc64"
 	"hash/fnv"
 	"io"
-	"log"
 	"os"
 )
 
@@ -22,12 +21,22 @@ type h struct {
 }
 
 func main() {
-	fileName := os.Args[1]
+	var input io.Reader
+	var err error
 
-	f, err := os.Open(fileName)
+	switch {
+	case len(os.Args) == 2:
+		input, err = os.Open(os.Args[1])
+	case len(os.Args) > 2:
+		fmt.Fprintln(os.Stderr, "only one argument is allowed")
+		os.Exit(1)
+	default:
+		input = os.Stdin
+	}
 
 	if err != nil {
-		log.Fatalf("could not open file %s\n", fileName)
+		fmt.Fprintf(os.Stderr, "could not open file '%s'\n", os.Args[1])
+		os.Exit(1)
 	}
 
 	hashes := []h{
@@ -53,7 +62,7 @@ func main() {
 		writers[idx] = hashes[idx].hash
 	}
 
-	io.Copy(io.MultiWriter(writers...), f)
+	io.Copy(io.MultiWriter(writers...), input)
 
 	for _, hsh := range hashes {
 		fmt.Printf("%s: %x\n", hsh.name, hsh.hash.Sum(nil))
