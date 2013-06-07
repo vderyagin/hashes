@@ -5,7 +5,8 @@ efficient, as input is read only once.
 
 ## Installation ##
 
-**You'll need Go workspace set up, read [here](http://golang.org/doc/code.html) on how to do that.**
+**You'll need Go workspace set up, read
+  [here](http://golang.org/doc/code.html) on how to do that.**
 
 
 ```shell
@@ -15,6 +16,14 @@ $ go get github.com/vderyagin/hashes
 To update installation just add `-u` flag.
 
 ## Usage ##
+
+```shell
+Usage of hashes:
+  -format="plain": format of output (allowed values: plain, json, xml)
+```
+If no arguments provided, data is read from stdin.
+
+Example usage:
 
 ```shell
 $ hashes somefile
@@ -34,7 +43,7 @@ fnv64-1: af92ca3d4f7dbfda
 fnv64-1a: 0615cf2092b65c54
 ```
 
-## Currently supported hash functions ##
+## Supported hash functions ##
 
 * md5
 * sha1
