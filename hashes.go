@@ -16,6 +16,7 @@ import (
 	"hash/fnv"
 	"io"
 	"os"
+	"runtime"
 	"sync"
 )
 
@@ -28,6 +29,8 @@ type HashSum struct {
 var format = flag.String("format", "plain", "format of output (allowed values: plain, json, xml)")
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	flag.Parse()
 
 	input := determineInput()
