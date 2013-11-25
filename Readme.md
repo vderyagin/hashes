@@ -1,7 +1,8 @@
 # Hashes #
 
 Calculate values of different hash functions for some piece of data
-at the same time. Rather efficient, as input is read only once.
+at the same time. Rather efficient, as input is read only once and
+hashes are calculated in parallel, using all available CPU cores.
 
 ## Installation ##
 
