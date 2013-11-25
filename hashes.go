@@ -16,6 +16,7 @@ import (
 	"hash/fnv"
 	"io"
 	"os"
+	"sync"
 )
 
 type HashSum struct {
@@ -38,10 +39,35 @@ func main() {
 		writers[idx] = hashes[idx].hash
 	}
 
-	io.Copy(io.MultiWriter(writers...), input)
+	io.Copy(MultiGoroutineWriter(writers...), input)
 
 	calculateSums(hashes)
 	outputHashes(hashes)
+}
+
+type multiGoroutineWriter struct {
+	writers []io.Writer
+}
+
+func MultiGoroutineWriter(writers ...io.Writer) multiGoroutineWriter {
+	return multiGoroutineWriter{writers}
+}
+
+func (w multiGoroutineWriter) Write(p []byte) (n int, err error) {
+	var wg sync.WaitGroup
+
+	wg.Add(len(w.writers))
+
+	for _, writer := range w.writers {
+		go func(w io.Writer) {
+			defer wg.Done()
+			w.Write(p)
+		}(writer)
+	}
+
+	wg.Wait()
+
+	return len(p), nil
 }
 
 func determineInput() io.Reader {
