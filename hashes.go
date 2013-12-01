@@ -20,6 +20,10 @@ import (
 	"sync"
 )
 
+const stdin = "*stdin*"
+
+type Results map[string][]HashSum
+
 type HashSum struct {
 	Name  string
 	Value string
@@ -33,19 +37,24 @@ func main() {
 
 	flag.Parse()
 
-	input := determineInput()
-	hashes := emptyHashes()
+	results := make(Results)
 
-	writers := make([]io.Writer, len(hashes))
+	for _, f := range inputFiles() {
+		results[f] = emptyHashes()
 
-	for idx := range hashes {
-		writers[idx] = hashes[idx].hash
+		writers := make([]io.Writer, len(results[f]))
+
+		for idx := range results[f] {
+			writers[idx] = results[f][idx].hash
+		}
+
+		input := inputFrom(f)
+
+		io.Copy(MultiGoroutineWriter(writers...), input)
+		calculateSums(results[f])
 	}
 
-	io.Copy(MultiGoroutineWriter(writers...), input)
-
-	calculateSums(hashes)
-	outputHashes(hashes)
+	outputResults(results)
 }
 
 type multiGoroutineWriter struct {
@@ -73,26 +82,46 @@ func (w multiGoroutineWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func determineInput() io.Reader {
-	var input io.Reader
-	var err error
+func inputFiles() []string {
+	args := flag.Args()
+	files := make([]string, 0, len(args))
 
-	switch {
-	case len(flag.Args()) == 1:
-		input, err = os.Open(flag.Arg(0))
-	case len(flag.Args()) > 1:
-		fmt.Fprintln(os.Stderr, "only one argument is allowed")
-		os.Exit(1)
-	default:
-		input = os.Stdin
+	for _, f := range args {
+		fi, err := os.Stat(f)
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "could not read file '%s'\n", f)
+			os.Exit(1)
+		}
+
+		if !fi.Mode().IsRegular() {
+			fmt.Fprintf(os.Stderr, "'%s' is not a regular file\n", f)
+			os.Exit(1)
+		}
+
+		files = append(files, f)
 	}
 
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "could not open file '%s'\n", flag.Arg(0))
-		os.Exit(1)
+	if len(files) == 0 {
+		files = append(files, stdin) // empty string stands for stdin
 	}
 
-	return input
+	return files
+}
+
+func inputFrom(s string) io.Reader {
+	if s == stdin {
+		return os.Stdin
+	} else {
+		input, err := os.Open(s)
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "could not open file '%s'\n", flag.Arg(0))
+			os.Exit(1)
+		}
+
+		return input
+	}
 }
 
 func emptyHashes() []HashSum {
@@ -120,17 +149,20 @@ func calculateSums(hashes []HashSum) {
 	}
 }
 
-func outputHashes(hashes []HashSum) {
+func outputResults(results Results) {
 	switch *format {
 	case "plain":
-		for _, hsh := range hashes {
-			fmt.Printf("%s: %s\n", hsh.Name, hsh.Value)
+		for file, hashes := range results {
+			fmt.Printf("%s:\n", file)
+			for _, hsh := range hashes {
+				fmt.Printf("  %s: %s\n", hsh.Name, hsh.Value)
+			}
 		}
 	case "json":
-		j, _ := json.MarshalIndent(hashes, "", "  ")
+		j, _ := json.MarshalIndent(results, "", "  ")
 		fmt.Println(string(j))
 	case "xml":
-		x, _ := xml.MarshalIndent(hashes, "", "  ")
+		x, _ := xml.MarshalIndent(results, "", "  ")
 		fmt.Println(string(x))
 	default:
 		fmt.Fprintf(os.Stderr, "unknown output format: '%s'\n", *format)
