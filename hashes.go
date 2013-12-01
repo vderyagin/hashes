@@ -113,7 +113,7 @@ func inputFiles() []string {
 	}
 
 	if len(files) == 0 {
-		files = append(files, stdin) // empty string stands for stdin
+		files = append(files, stdin) // read from stdin when no files specified
 	}
 
 	return files
