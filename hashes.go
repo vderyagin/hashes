@@ -39,7 +39,12 @@ func main() {
 
 	results := make(Results)
 
-	for _, f := range inputFiles() {
+	files := inputFiles()
+
+	var wg sync.WaitGroup
+	wg.Add(len(files))
+
+	for _, f := range files {
 		results[f] = emptyHashes()
 
 		writers := make([]io.Writer, len(results[f]))
@@ -50,9 +55,14 @@ func main() {
 
 		input := inputFrom(f)
 
-		io.Copy(MultiGoroutineWriter(writers...), input)
-		calculateSums(results[f])
+		go func(ws []io.Writer, in io.Reader, res []HashSum) {
+			defer wg.Done()
+			io.Copy(MultiGoroutineWriter(ws...), in)
+			calculateSums(res)
+		}(writers, input, results[f])
 	}
+
+	wg.Wait()
 
 	outputResults(results)
 }
